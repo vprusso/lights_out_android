@@ -8,6 +8,11 @@ import android.widget.Button;
 
 public class Classic extends AppCompatActivity implements View.OnClickListener {
 
+    private static final int[][] LEVELS = {
+            {7,11,12,13,17},
+            {5,9,10,11,13,14,15,19}
+    };
+
     private static final int[] BUTTON_IDS = {
       R.id.button1, R.id.button2, R.id.button3, R.id.button4, R.id.button5,
       R.id.button6, R.id.button7, R.id.button8, R.id.button9, R.id.button10,
@@ -20,6 +25,10 @@ public class Classic extends AppCompatActivity implements View.OnClickListener {
     private boolean[] button_states = new boolean[BUTTON_IDS.length];
 
     private int row_col_length = 5;
+
+    private int num_moves;
+    private long level_time; // System.nanoTime()
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,30 +45,38 @@ public class Classic extends AppCompatActivity implements View.OnClickListener {
         return true;
     }
 
-    private void setupBoard() {
+    private void setupBoard(int level_num) {
         // Setup some game here. Will eventually read games from text file...
         for (int i = 0; i < BUTTON_IDS.length; i++) {
             buttons[i].setBackgroundColor(Color.WHITE);
             button_states[i] = Boolean.FALSE;
         }
-        buttons[0].setBackgroundColor(Color.RED);
-        button_states[0] = Boolean.TRUE;
-
-        buttons[1].setBackgroundColor(Color.RED);
-        button_states[1] = Boolean.TRUE;
-
-        buttons[5].setBackgroundColor(Color.RED);
-        button_states[5] = Boolean.TRUE;
-
+        for (int i = 0; i < LEVELS[level_num].length; i++ ) {
+            buttons[ LEVELS[level_num][i] ].setBackgroundColor(Color.RED);
+            button_states[ LEVELS[level_num][i] ] = Boolean.TRUE;
+        }
     }
 
     private void activateButton(Button b, int button_id) {
         button_states[button_id] = Boolean.TRUE;
         buttons[button_id].setBackgroundColor(Color.RED);
     }
+
     private void deactivateButton(Button b, int button_id) {
         button_states[button_id] = Boolean.FALSE;
         buttons[button_id].setBackgroundColor(Color.WHITE);
+    }
+
+    private boolean isOffRightScreen(int button_id) {
+        return ( (button_id + 1) % row_col_length == 0 );
+    }
+
+    private boolean isOffLeftScreen(int button_id) {
+        return ( button_id % row_col_length == 0 );
+    }
+
+    private boolean isButtonActive(int button_id) {
+        return ( button_states[button_id] == Boolean.TRUE );
     }
 
     private void setButtonRadius(Button[] buttons, int button_id) {
@@ -69,44 +86,38 @@ public class Classic extends AppCompatActivity implements View.OnClickListener {
         int left = button_id - 1;
         int right = button_id + 1;
 
-        if ( isButtonActive( button_id ) )
+        if ( isButtonActive( button_id )  )
             deactivateButton( buttons[button_id], button_id );
         else
             activateButton(buttons[button_id], button_id);
 
-        if (top > 0 && top < BUTTON_IDS.length) {
+        if (top >= 0 && top < BUTTON_IDS.length) {
             if ( isButtonActive( top ) )
                 deactivateButton( buttons[top], top );
             else
                 activateButton( buttons[top], top );
         }
 
-        if (bottom > 0 && bottom < BUTTON_IDS.length) {
+        if (bottom >= 0 && bottom < BUTTON_IDS.length) {
             if ( isButtonActive( bottom ) )
                 deactivateButton( buttons[bottom], bottom );
             else
                 activateButton( buttons[bottom], bottom );
         }
 
-        if (left > 0 && left < BUTTON_IDS.length) {
+        if (left >= 0 && left < BUTTON_IDS.length && !isOffLeftScreen(button_id) ) {
             if ( isButtonActive( left ) )
                 deactivateButton( buttons[left], left );
             else
                 activateButton( buttons[left], left );
         }
 
-        if (right > 0 && right < BUTTON_IDS.length) {
+        if (right >= 0 && right < BUTTON_IDS.length && !isOffRightScreen(button_id) ) {
             if ( isButtonActive( right ) )
                     deactivateButton( buttons[right], right );
             else
                 activateButton( buttons[right], right );
         }
-    }
-
-    private boolean isButtonActive(int button_id) {
-        if ( button_states[button_id] == Boolean.TRUE )
-            return true;
-        return false;
     }
 
     private void setupVariables() {
@@ -128,14 +139,11 @@ public class Classic extends AppCompatActivity implements View.OnClickListener {
             });
         }
 
-        setupBoard();
+        setupBoard(1);
 
     }
 
     public void onClick(View v) {
-
-
-
     }
 
 }
