@@ -6,6 +6,7 @@
     <string name="button_how_to_play">How to Play</string>
     <string name="button_about">About</string>
     <string name="lights_out_title">Lights Out!</string>
+    <string name="moves_title">Moves:</string>
 
 
 </resources>

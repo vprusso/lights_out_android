@@ -5,20 +5,29 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 public class Classic extends AppCompatActivity implements View.OnClickListener {
 
+    public Button bHome, bHint, bReset;
+    public TextView tvNumMoves;
+
     private static final int[][] LEVELS = {
             {7,11,12,13,17},
-            {5,9,10,11,13,14,15,19}
+            {5,9,10,11,13,14,15,19},
+            {3,4,7,9,11,12,13,15,17,20,21},
+            {0,1,3,4,5,9,15,19,20,21,23,24},
+            {0,1,3,4,5,7,9,11,12,13,15,17,19,20,21,23,24},
+            {10,12,14},
+            {0,2,4,5,7,9,15,17,19,20,22,24}
     };
 
     private static final int[] BUTTON_IDS = {
-      R.id.button1, R.id.button2, R.id.button3, R.id.button4, R.id.button5,
-      R.id.button6, R.id.button7, R.id.button8, R.id.button9, R.id.button10,
-      R.id.button11, R.id.button12, R.id.button13, R.id.button14, R.id.button15,
-      R.id.button16, R.id.button17, R.id.button18, R.id.button19, R.id.button20,
-      R.id.button21, R.id.button22, R.id.button23, R.id.button24, R.id.button25,
+      R.id.button0, R.id.button1, R.id.button2, R.id.button3, R.id.button4,
+      R.id.button5, R.id.button6, R.id.button7, R.id.button8, R.id.button9,
+      R.id.button10, R.id.button11, R.id.button12, R.id.button13, R.id.button14,
+      R.id.button15, R.id.button16, R.id.button17, R.id.button18, R.id.button19,
+      R.id.button20, R.id.button21, R.id.button22, R.id.button23, R.id.button24,
     };
 
     private Button[] buttons = new Button[BUTTON_IDS.length];
@@ -26,6 +35,7 @@ public class Classic extends AppCompatActivity implements View.OnClickListener {
 
     private int row_col_length = 5;
 
+    private int level_num = 0;
     private int num_moves;
     private long level_time; // System.nanoTime()
 
@@ -37,24 +47,17 @@ public class Classic extends AppCompatActivity implements View.OnClickListener {
         setupVariables();
     }
 
-    private boolean checkVictory(Button[] buttons) {
-        for (int i = 0; i < BUTTON_IDS.length; i++) {
-            if (isButtonActive(i))
-                return false;
-        }
-        return true;
+    private void setLevel(int lvl) {
+        level_num = lvl;
     }
 
-    private void setupBoard(int level_num) {
-        // Setup some game here. Will eventually read games from text file...
-        for (int i = 0; i < BUTTON_IDS.length; i++) {
-            buttons[i].setBackgroundColor(Color.WHITE);
-            button_states[i] = Boolean.FALSE;
-        }
-        for (int i = 0; i < LEVELS[level_num].length; i++ ) {
-            buttons[ LEVELS[level_num][i] ].setBackgroundColor(Color.RED);
-            button_states[ LEVELS[level_num][i] ] = Boolean.TRUE;
-        }
+    private void resetTimer() {
+        level_time = 0;
+    }
+
+    private void resetNumMoves() {
+        num_moves = 0;
+        tvNumMoves.setText(Integer.toString(num_moves));
     }
 
     private void activateButton(Button b, int button_id) {
@@ -120,7 +123,43 @@ public class Classic extends AppCompatActivity implements View.OnClickListener {
         }
     }
 
+    private void initBoard() {
+        for (int i = 0; i < BUTTON_IDS.length; i++) {
+            buttons[i].setBackgroundColor(Color.WHITE);
+            button_states[i] = Boolean.FALSE;
+        }
+        resetTimer();
+        resetNumMoves();
+    }
+
+    private void setupBoard() {
+
+        initBoard();
+
+        for (int i = 0; i < LEVELS[level_num].length; i++ ) {
+            buttons[ LEVELS[level_num][i] ].setBackgroundColor(Color.RED);
+            button_states[ LEVELS[level_num][i] ] = Boolean.TRUE;
+        }
+    }
+
+    private boolean checkVictory(Button[] buttons) {
+        for (int i = 0; i < BUTTON_IDS.length; i++) {
+            if (isButtonActive(i))
+                return false;
+        }
+        return true;
+    }
+
     private void setupVariables() {
+
+        bHome = (Button)findViewById(R.id.bHome);
+        bHome.setOnClickListener(this);
+
+        bReset = (Button)findViewById(R.id.bReset);
+        bReset.setOnClickListener(this);
+
+        tvNumMoves = (TextView)findViewById(R.id.tvNumMoves);
+
         for (int i = 0; i < BUTTON_IDS.length; i++) {
             final int button_id = i;
             buttons[button_id] = (Button)findViewById(BUTTON_IDS[button_id]);
@@ -129,21 +168,36 @@ public class Classic extends AppCompatActivity implements View.OnClickListener {
                 public void onClick(View v) {
 
                     if (buttons[button_id].isPressed()) {
-                        setButtonRadius( buttons, button_id );
+                        setButtonRadius(buttons, button_id);
+                        num_moves++;
+                        tvNumMoves.setText(Integer.toString(num_moves));
                     }
+
                     if ( checkVictory(buttons) ) {
                         // TODO : victory dance
-                    }
+                        level_num++;
+                        if (level_num <= LEVELS.length) {
+                            setLevel(level_num);
+                            setupBoard();
+                        } else {
+                            // TODO
+                        }
+                    } // end checkVictory
 
                 }
             });
         }
 
-        setupBoard(1);
+        setupBoard();
 
     }
 
     public void onClick(View v) {
+
+        if (bReset.isPressed()) {
+            setupBoard();
+        }
+
     }
 
 }
