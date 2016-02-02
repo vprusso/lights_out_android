@@ -10,7 +10,7 @@ import android.widget.TextView;
 public class Classic extends AppCompatActivity implements View.OnClickListener {
 
     public Button bHome, bHint, bReset;
-    public TextView tvNumMoves;
+    public TextView tvNumMoves, tvLevelTime;
 
     private static final int[][] LEVELS = {
             {7,11,12,13,17},
@@ -30,10 +30,10 @@ public class Classic extends AppCompatActivity implements View.OnClickListener {
       R.id.button20, R.id.button21, R.id.button22, R.id.button23, R.id.button24,
     };
 
+    private static final int row_col_length = 5;
+
     private Button[] buttons = new Button[BUTTON_IDS.length];
     private boolean[] button_states = new boolean[BUTTON_IDS.length];
-
-    private int row_col_length = 5;
 
     private int level_num = 0;
     private int num_moves;
@@ -53,6 +53,7 @@ public class Classic extends AppCompatActivity implements View.OnClickListener {
 
     private void resetTimer() {
         level_time = 0;
+        tvLevelTime.setText(Long.toString(level_time));
     }
 
     private void resetNumMoves() {
@@ -159,6 +160,7 @@ public class Classic extends AppCompatActivity implements View.OnClickListener {
         bReset.setOnClickListener(this);
 
         tvNumMoves = (TextView)findViewById(R.id.tvNumMoves);
+        tvLevelTime = (TextView)findViewById(R.id.tvLevelTime);
 
         for (int i = 0; i < BUTTON_IDS.length; i++) {
             final int button_id = i;
@@ -170,7 +172,9 @@ public class Classic extends AppCompatActivity implements View.OnClickListener {
                     if (buttons[button_id].isPressed()) {
                         setButtonRadius(buttons, button_id);
                         num_moves++;
+                        // Put in timer stuff here
                         tvNumMoves.setText(Integer.toString(num_moves));
+                        tvLevelTime.setText(Long.toString(level_time));
                     }
 
                     if ( checkVictory(buttons) ) {
@@ -192,6 +196,7 @@ public class Classic extends AppCompatActivity implements View.OnClickListener {
 
     }
 
+    @Override
     public void onClick(View v) {
 
         if (bReset.isPressed()) {
