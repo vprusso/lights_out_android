@@ -12,7 +12,7 @@ public class Classic extends AppCompatActivity implements View.OnClickListener {
     public Button bHome, bHint, bReset;
     public TextView tvNumMoves, tvLevelTime;
 
-    private static final int[][] LEVELS = {
+    public static final int[][] LEVELS = {
             {7,11,12,13,17},
             {5,9,10,11,13,14,15,19},
             {3,4,7,9,11,12,13,15,17,20,21},
@@ -53,12 +53,12 @@ public class Classic extends AppCompatActivity implements View.OnClickListener {
 
     private void resetTimer() {
         level_time = 0;
-        tvLevelTime.setText(Long.toString(level_time));
+        tvLevelTime.setText(String.format("%d", level_time));
     }
 
     private void resetNumMoves() {
         num_moves = 0;
-        tvNumMoves.setText(Integer.toString(num_moves));
+        tvNumMoves.setText(String.format("%d", num_moves));
     }
 
     private void activateButton(Button b, int button_id) {
@@ -173,8 +173,9 @@ public class Classic extends AppCompatActivity implements View.OnClickListener {
                         setButtonRadius(buttons, button_id);
                         num_moves++;
                         // Put in timer stuff here
-                        tvNumMoves.setText(Integer.toString(num_moves));
-                        tvLevelTime.setText(Long.toString(level_time));
+                        tvNumMoves.setText(String.format("%d", num_moves));
+                        tvLevelTime.setText(String.format("%d", level_time));
+
                     }
 
                     if ( checkVictory(buttons) ) {
